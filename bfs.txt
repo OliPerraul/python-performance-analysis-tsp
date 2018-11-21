@@ -1,0 +1,16 @@
+    def _bfs_visit(self, idx, visited, path, cost):
+        q = queue.Queue()
+        visited = util.bit_set(visited, idx) # visit root
+        path.append(idx)
+        q.put(idx)
+        while not q.empty():
+            print(q.queue)
+            idx = q.get()
+            for child in self.nodes[idx].children:
+                if not util.bit_check(visited, child):
+                    visited = util.bit_set(visited, child)
+                    cost += self.adj[idx][child]
+                    path.append(child)
+                    q.put(child)
+
+        return visited, cost
