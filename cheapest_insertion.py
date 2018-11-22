@@ -1,4 +1,3 @@
-import util
 
 def solve(adj, order):
     cost = 0
@@ -13,20 +12,21 @@ def solve(adj, order):
                     and (smallest == -1 or
                          cost + adj[idx][i] + adj[i][0] < \
                          cost + adj[idx][smallest] + adj[smallest][0]) \
-                    and not util.bit_check(visited, i):
+                    and not (visited & (1 << i)) != 0:
                 smallest = i
 
         if smallest != -1:
             cost += adj[idx][smallest]
             idx = smallest
             path.append(smallest)
-            visited = util.bit_set(visited, smallest)
+            visited |= (1 << smallest)
 
     cost += adj[idx][0] # loop back
     return path + [0], cost
 
 
 
+CONTENT = ['Cheapest Insertion', 'green', solve]
 
 
 

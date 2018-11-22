@@ -1,7 +1,10 @@
 import random
 import math
-import util
 
+def last(ar):
+    if len(ar) == 0:
+        return None
+    return ar[len(ar)-1]
 
 def next_permutation(v, n):
     i = n - 1 # longest non-increasing suffix
@@ -27,7 +30,7 @@ def shortest_path(path1, cost1, path2, adj, order):
         if cost2 >= cost1:
             return path1, cost1
     cost2 += adj[0][path2[0]]  # first edge
-    cost2 += adj[util.end(path2)][0] # last edge
+    cost2 += adj[last(path2)][0] # last edge
     if cost2 >= cost1:
         return path1, cost1
     return path2.copy(), cost2
@@ -43,3 +46,5 @@ def solve(adj, order):
     return [0] + path1 + [0], cost1
 
 
+
+CONTENT = ['Brute Force', 'purple', solve]
