@@ -3,6 +3,7 @@ import timeit
 import argparse
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+import os
 
 import util
 import wrapper as wrp
@@ -13,14 +14,10 @@ import nearest_insertion as ni
 import cheapest_insertion as ci
 import minimum_spanning_tree as mst
 
-
 def validate(path, cost, adj):
     ccost = 0
     for i in range(len(path)-1):
         ccost += adj[path[i]][path[i+1]]
-    ccost += adj[0][path[0]]  # first edge
-    ccost += adj[util.last(path)][0] # last edge
-
     if not math.isclose(cost, ccost):
         raise Exception('Badly calculated path cost.')
 
@@ -34,6 +31,9 @@ def analyse_algorithm(adj,order,algorithm,repeat=10):
     print('procedure repeated {} times'.format(repeat))
     print('minimum time: {}'.format(min_time))
     path, cost = closure()
+    validate(path, cost, adj)
+    print('path : {}'.format(path))
+    print('cost : {}'.format(cost))
 
     return min_time, cost
 
@@ -86,25 +86,27 @@ def main(args):
 
     # Execute correct command
     if args.cmd == 'read':
-        for algorithm in algorithms:
-            adj, order = dataset.read(args.path)
-            y1, y2 = analyse_algorithm(adj,order,algorithm,args.repeat)
-            plot_correct.scatter(order, y2, color=algorithm.color, alpha=0.5, s=0.5)
-            plot_complex.scatter(order, y1, color=algorithm.color, alpha=0.5,s=0.5)
+        datasets = dataset.read(args.path)
+        for ds in datasets:
+            for algorithm in algorithms:
+                y1, y2 = analyse_algorithm(ds.adj, ds.order, algorithm, args.repeat)
+                plot_correct.scatter(ds.order, y2, color=algorithm.color, alpha=0.5, s=0.5)
+                plot_complex.scatter(ds.order, y1, color=algorithm.color, alpha=0.5, s=0.5)
 
-        fig_correct.savefig('Correctness',dpi=300,bbox_inches='tight')
-        fig_complex.savefig('Complexity',dpi=300,bbox_inches='tight')
+
 
     elif args.cmd == 'random':
-            if args.growth == 'logn':
-                growth = util.logarithmic
-            elif args.growth == 'n':
-                growth = util.linear
+            if args.write:
+                if not os.path.exists('datasets'):
+                    os.makedirs('datasets')
 
             order = args.order  # reset n
             while order <= args.max:
                 for i in range(args.trials):
-                    adj = dataset.generate(order,args.spread,args.path)
+                    path = None
+                    if args.write:
+                        path = "datasets/order_{}_trial_{}.dat".format(order, i)
+                    adj = dataset.generate(order,args.spread,path)
                     for algorithm in algorithms:
                         y1, y2 = analyse_algorithm(adj,order,algorithm,args.repeat)
                         algorithm.x.append(order)
@@ -120,7 +122,7 @@ def main(args):
                     algorithm.working_correct.clear()
                     algorithm.working_complex.clear()
 
-                order = growth(order)
+                order += 1
 
             if args.plot:
                 for algorithm in algorithms:
@@ -151,11 +153,10 @@ if __name__ == "__main__":
 
     random_parser = subparsers.add_parser('random')
     random_parser.add_argument('-order', type=int, required=True)
-    random_parser.add_argument('--growth', type=str, choices=['logn', 'n'], default='n')
     random_parser.add_argument('-max', type=int, required=True)
     random_parser.add_argument('--trials', type=int, default=1, required=False)
     random_parser.add_argument('-spread', type=int, required=True)
-    random_parser.add_argument('--path', type=str, required=False)
+    random_parser.add_argument('--write', action='store_true', default=False, required=False)
     init_parser_common(random_parser)
 
     read_parser = subparsers.add_parser('read')

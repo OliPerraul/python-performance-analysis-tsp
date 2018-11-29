@@ -18,16 +18,6 @@ def average(lst):
     return sum(lst) / len(lst)
 
 
-def logarithmic(n):
-    res = -1
-    while(res == n):
-        res = math.floor(n + math.log(n,2))
-    return res
-
-def linear(n):
-    n += 1
-    return n
-
 def isfloat(value):
   try:
     float(value)

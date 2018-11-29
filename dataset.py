@@ -2,8 +2,16 @@
 import random
 import datetime
 import operator as op
+import os
 
 import util
+
+
+class Dataset:
+    def __init__(self):
+        self.adj = None
+        self.order = -1
+
 
 def write_randint_test(path,size):
     f = open(path, 'w')
@@ -60,7 +68,6 @@ def read(path):
         else:
             adj[int(vals[0])][int(vals[1])] = vals[2]
     return adj, order
-
 
 def generate(order, spread, writepath=None):
     adj = [[None for i in range(order)] for j in range(order)]

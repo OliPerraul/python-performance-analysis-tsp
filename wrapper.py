@@ -7,11 +7,11 @@ class AlgorithmWrapper:
 
         # will contain data points to be plotted
         self.x = []
-        self.correct = []
-        self.complex = []
+        self.correct = [] # contains data points to compute the algorithm correctness given a number of city x
+        self.complex = [] # same with the complexity
 
-        self.working_correct = [] # use to compute the average
-        self.working_complex = []
+        self.working_correct = [] # use to compute the average correctness
+        self.working_complex = [] # use to compute the average complexity
 
         self.avg_x = []
         self.avg_correct = []
